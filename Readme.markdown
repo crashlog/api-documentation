@@ -82,3 +82,95 @@ A successfully lodged exception will return a hash like:
 The standard location for locating exceptions within the CrashLog UI is `http://crashlog.io/locate/:location_id`
 
 This will either return `404` if the exception has not yet been loaded (< T+1 second) or `301` with a redirection to the actual error page.
+
+# Example Payload Schema
+
+```json
+{
+  "payload" : {
+
+    // Interface: Notifier
+    "notifier" : {
+      "name": "crashlog-nodejs",
+      "version": "1.0.0"
+    },
+
+    // Interface: Event
+    "event" : {
+      "message" : "Some one line error description",
+      "type": "RuntimeError",
+      "timestamp" : "2012-08-03T12:34:19+10:00"
+    }
+
+    // Interface: Backtrace
+    "backtrace" : [
+      {
+        // Required
+        "file": "somewhere.js",
+        "number": 14, // Line number
+        "method": "raiseTheRoof",
+
+        // Optional
+        "context_line": "source code for affected line",
+        "pre_context" : ["line -1 before affected line", "line -2 before affected line", "line ..."],
+        "post_context" : ["line +1 after affected line", "line ..."]
+      },
+
+      {
+        // Required
+        "file": "somewhere_else.js",
+        "number": 192, // Line number
+        "method": "setup",
+
+        // Optional
+        "context_line": "source code for affected line",
+        "pre_context" : ["line -1 before affected line", "line -2 before affected line", "line ..."],
+        "post_context" : ["line +1 after affected line", "line ..."]
+      }
+    ],
+
+    // Interface: Environment
+    // Optional
+    //
+    // Any key value pairs you want to be able to view later on
+    //
+    // At the moment this is unstructured, this will likely change in the furure.
+    "environment": {
+      "project_root" : "/home/deploy/my_app/current",
+      "platform" : "Node.js 0.6.x",
+      "name": "production",
+      "system": {
+        "distribution": "Ubuntu 12.04 LTS"
+      },
+      "browser": {
+        "ident": "Usual browser tag"
+      },
+
+      "plugins": []
+
+      // TODO: Insert more attributes here
+
+    },
+
+    // Interface: Context
+    // Optional
+    // Any contextual information relating to the cause of this error
+    // This is typically a serialisation of the current user
+    //
+    // The attributes can be used to correlate errors
+    "context" : {
+      "stage" : "production",
+      "hostname": "app01.myhostname.com",
+      "current_user": {
+        "id": 1,
+        "email": "user@example.com"
+      },
+
+      "controller": {
+        "name": "usersController",
+        "action": "index"
+      }
+    }
+  }
+}
+```
